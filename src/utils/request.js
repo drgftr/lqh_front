@@ -21,6 +21,8 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
     }
+    console.log(config.baseURL)
+    console.log(config.url)
     if (config.url.startsWith('/api')) {
       config.baseURL = ''
     }

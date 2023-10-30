@@ -36,8 +36,8 @@ export default {
   data() {
     return {
       form: {
-        name: '',
         sn: '',
+        name: '',
         state: ''
       },
       parentDepartment:null,
@@ -49,8 +49,8 @@ export default {
 
 
   created() {
-    console.log(this.$route.params.data)
     this.parentDepartment = this.$route.params.data
+    console.log(this.parentDepartment)
     if (!this.parentDepartment) {
       this.tags.push({
         name: '暂无选择'
@@ -64,11 +64,11 @@ export default {
   methods: {
     onSubmit() {
       this.$message('submit!')
-      console.log(this.form.name)
+      console.log(this.form)
       let requestData = {
         sn: this.form.sn,
         name: this.form.name,
-        state: this.state,
+        state: this.form.state,
         parent: {
           id: this.parentDepartment['id']
         }

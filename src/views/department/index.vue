@@ -3,7 +3,7 @@
     <div class="left">
       <div class="action">
         <el-button icon="el-icon-plus" @click="toAddDepartmentPage">新增部门</el-button>
-        <el-button icon="el-icon-plus" @click="toDeleteDepartment">删除部门</el-button>
+        <el-button icon="el-icon-plus" @click="deleteDepartment">删除部门</el-button>
 
         <!--        <el-button type="primary" icon="el-icon-plus">删除部门</el-button>-->
       </div>
@@ -73,8 +73,9 @@
 <script>
 import { list } from '@/api/department'
 import { getList } from '@/api/table'
-export default {
+import { deleteDepartment } from "@/api/department";
 
+export default {
   data() {
     return {
       filterText: '',
@@ -98,13 +99,44 @@ export default {
       if (!value) return true
       return data.label.indexOf(value) !== -1
     },
-    check(){
-     console.log(1)
+    fetchTreeData() {
+      this.listLoading = true
+      list().then(Response => {
+        this.data = Response.data
+        this.data1 = this.data
+      })
     },
-    toDeleteDepartment(){
-      const r = this.$refs.tree.getCheckedNodes()
-      console.log(r)
-
+    fetchData() {
+      this.listLoading = true
+      getList().then(response => {
+        this.list = response.data.items
+        this.listLoading = false
+      })
+    },
+    deleteDepartment(){
+      const r = this.$refs.tree.getCurrentNode()
+      if(!r) {
+        this.$.warning('未选择删除部门')
+        return
+      }
+      const departmentId = r.id
+      this.$confirm('确认删除吗？','提升', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(()=> {
+        deleteDepartment({id: departmentId })
+        .then(() => {
+          this.treeData()
+          this.fetchData()
+          this.$message.success('删除成功')
+        })
+        .catch(error => {
+          console/error('删除失败',error)
+          this.$message.error('删除失败')
+        })
+      })
     },
     toAddDepartmentPage() {
       const r = this.$refs.tree.getCurrentNode()
@@ -117,19 +149,7 @@ export default {
       }
       // this.$router.push({ path: '/department/create' })
     },
-    fetchTreeData() {
-      this.listLoading = true
-      list().then(response => {
-        this.data1 = response.data
-      })
-    },
-    fetchData() {
-      this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
-      })
-    }
+
   }
 }
 </script>
