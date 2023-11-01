@@ -69,12 +69,11 @@ export default {
         sn: this.form.sn,
         name: this.form.name,
         state: this.form.state,
-        parent: {
-          id: this.parentDepartment['id']
-        }
+        parentId: this.parentDepartment['id']
+
       }
       crateDepartment(requestData).then(response =>{
-        console.log(response)
+        console.log('requestData:', requestData)
         if (response['resultCode'] === 200) {
           this.$router.push({path:"/department/index"})
         }else {

@@ -21,8 +21,8 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
     }
-    console.log(config.baseURL)
-    console.log(config.url)
+    // console.log(config.baseURL)
+    // console.log(config.url)
     if (config.url.startsWith('/api')) {
       config.baseURL = ''
     }
@@ -49,9 +49,13 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-
+    // console.log(response.data.resultCode)
     // if the custom code is not 20000, it is judged as an error.
     if (res.resultCode !== 200) {
+      // console.log('---------')
+      // console.log(res)
+      // console.log(response.data.resultCode)
+      // console.log(res.resultCode)
       Message({
         message: res.message || 'Error',
         type: 'error',

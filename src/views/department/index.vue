@@ -10,70 +10,134 @@
 
       <el-tree
         ref="tree"
-        show-checkbox
-        node-key="id"
-        highlight-current
         :data="data1"
         :props="defaultProps"
         :filter-node-method="filterNode"
-        @check="check"
         class="filter-tree"
         default-expand-all
       />
     </div>
 
     <div class="right">
-      <el-button icon="el-icon-plus">新增人员</el-button>
+      <el-button icon="el-icon-plus" @click="dialogFormVisible = true">新增人员</el-button>
       <el-button plain icon="el-icon-delete">批量删除</el-button>
-      <el-table
-        v-loading="listLoading"
-        class="menmber"
-        :data="list"
-        element-loading-text="Loading"
-        border
-        fit
-        highlight-current-row
-      >
-        <el-table-column align="center" label="ID" width="95">
-          <template slot-scope="scope">
-            {{ scope.$index }}
-          </template>
-        </el-table-column>
-        <el-table-column label="Title">
-          <template slot-scope="scope">
-            {{ scope.row.title }}
-          </template>
-        </el-table-column>
-        <el-table-column label="Author" width="110" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.author }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Pageviews" width="110" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.pageviews }}
-          </template>
-        </el-table-column>
-        <el-table-column class-name="status-col" label="Status" width="110" align="center">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-          <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.display_time }}</span>
-          </template>
+      <el-table :data="tableData" border>
+        <el-table-column label="序号" type="index" width="50"/>
+        <el-table-column prpo="username" type="用户名" width="180"/>
+        <el-table-column prpo="email" type="邮箱" width="180"/>
+        <el-table-column prpo="phone" type="手机号" width="180"/>
+        <el-table-column prpo="age" type="年龄" width="180"/>
+        <el-table-column prpo="state" type="状态" width="180"/>
+        <el-table-column prpo="did" type="部门" width="180"/>
+        <el-table-column label="操作" width="180">
+          <el-button
+            size="mini"
+            @click="editEmployee()"
+          >编辑</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="deleteEmployee()"
+          >删除</el-button>
         </el-table-column>
       </el-table>
+
+<!--      <el-pagination-->
+<!--        :current-page="page"-->
+<!--        :page-size="size"-->
+<!--        :page-sizes="pageSizes"-->
+<!--        layout="total, sizes, prev, pager, next, jumper"-->
+<!--        :total="total"-->
+<!--        @size-change="sizeChange"-->
+<!--        @current-change="currentChange"-->
+<!--      />-->
+<!--      <el-table-->
+<!--        v-loading="listLoading"-->
+<!--        class="menmber"-->
+<!--        :data="list"-->
+<!--        element-loading-text="Loading"-->
+<!--        border-->
+<!--        fit-->
+<!--        highlight-current-row-->
+<!--      >-->
+<!--        <el-table-column align="center" label="ID" width="95">-->
+<!--          <template slot-scope="scope">-->
+<!--            {{ scope.$index }}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="Title">-->
+<!--          <template slot-scope="scope">-->
+<!--            {{ scope.row.title }}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="Author" width="110" align="center">-->
+<!--          <template slot-scope="scope">-->
+<!--            <span>{{ scope.row.author }}</span>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="Pageviews" width="110" align="center">-->
+<!--          <template slot-scope="scope">-->
+<!--            {{ scope.row.pageviews }}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column class-name="status-col" label="Status" width="110" align="center">-->
+<!--          <template slot-scope="scope">-->
+<!--            <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column align="center" prop="created_at" label="Display_time" width="200">-->
+<!--          <template slot-scope="scope">-->
+<!--            <i class="el-icon-time" />-->
+<!--            <span>{{ scope.row.display_time }}</span>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
+    </div>
+    <div>
+      <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+      <el-dialog title="新增人员" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+          <el-form-item label="名字" :label-width="formLabelWidth">
+            <el-input v-model="form.username" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" :label-width="formLabelWidth">
+            <el-input v-model="form.password" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="email" :label-width="formLabelWidth">
+            <el-input v-model="form.email" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="phone" :label-width="formLabelWidth">
+            <el-input v-model="form.phone" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="年龄" :label-width="formLabelWidth">
+            <el-input v-model="form.age" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="部门id" :label-width="formLabelWidth">
+            <el-input v-model="form.did" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="状态" :label-width="formLabelWidth">
+            <el-select v-model="form.state" placeholder="请选择状态">
+              <el-option label="在职" value="0"></el-option>
+              <el-option label="离职" value="1"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="add" >确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
+
+
+
 </template>
 
 <script>
-import { list } from '@/api/department'
-import { getList } from '@/api/table'
-import { deleteDepartment } from "@/api/department";
+  import { list } from '@/api/department'
+  import { deleteDepartment } from "@/api/department";
+  import { addEmployee , findAll } from '@/api/employee'
 
 export default {
   data() {
@@ -83,9 +147,25 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'name'
-      }
+      },
+      tableData: [
+
+      ],
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '120px'
     }
-  }, watch: {
+  },
+  watch: {
     filterText(val) {
       this.$refs.tree.filter(val)
     }
@@ -108,9 +188,10 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
+      findAll().then(Response => {
+        this.data = Response.data
+        this.tableData = this.data
+        console.log(this.data)
       })
     },
     deleteDepartment(){
@@ -126,17 +207,17 @@ export default {
         type: 'warning'
       })
         .then(()=> {
-        deleteDepartment({id: departmentId })
-        .then(() => {
-          this.treeData()
-          this.fetchData()
-          this.$message.success('删除成功')
-        })
-        .catch(error => {
-          console/error('删除失败',error)
-          this.$message.error('删除失败')
-        })
-      })
+          deleteDepartment({id: departmentId })
+            .then(() => {
+               this.treeData()
+               this.fetchData()
+               this.$message.success('删除成功')
+            })
+            .catch(error => {
+              console.error('删除失败',error)
+              this.$message.error('删除失败')
+            })
+          })
     },
     toAddDepartmentPage() {
       const r = this.$refs.tree.getCurrentNode()
@@ -149,6 +230,33 @@ export default {
       }
       // this.$router.push({ path: '/department/create' })
     },
+    add(){
+      this.$message('submit!')
+      console.log(this.form)
+      let requestData = {
+        username: this.form.username,
+        password: this.form.password,
+        email: this.form.email,
+        phone: this.form.phone,
+        state: this.form.state,
+        age: this.form.age,
+        did: this.form.did
+      }
+      addEmployee(requestData).then(response =>{
+        console.log('requestData:', requestData)
+        if (response['resultCode'] === 200) {
+          this.$router.push({path:"/department/index"})
+        }else {
+          this.$message(response['message'])
+        }
+      })
+    },
+    editEmployee(){
+
+    },
+    deleteEmployee(){
+
+    }
 
   }
 }
