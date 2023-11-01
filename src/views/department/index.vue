@@ -19,26 +19,29 @@
     </div>
 
     <div class="right">
-      <el-button icon="el-icon-plus" @click="dialogFormVisible = true">新增人员</el-button>
+      <el-button icon="el-icon-plus" @click="editAndAddMaterial()">新增人员</el-button>
       <el-button plain icon="el-icon-delete">批量删除</el-button>
       <el-table :data="tableData" border>
         <el-table-column label="序号" type="index" width="50"/>
-        <el-table-column prop="username" type="用户名" width="180"/>
-        <el-table-column prop="email" type="邮箱" width="180"/>
-        <el-table-column prop="phone" type="手机号" width="180"/>
-        <el-table-column prop="age" type="年龄" width="180"/>
-        <el-table-column prop="state" type="状态" width="180"/>
-        <el-table-column prop="did" type="部门" width="180"/>
-        <el-table-column label="操作" width="180">
-          <el-button
-            size="mini"
-            @click="editEmployee()"
-          >编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="deleteEmployee()"
-          >删除</el-button>
+        <el-table-column prop="id" type="id" width="100"/>
+        <el-table-column prop="username" type="用户名" width="100"/>
+        <el-table-column prop="email" type="邮箱" width="100"/>
+        <el-table-column prop="phone" type="手机号" width="100"/>
+        <el-table-column prop="age" type="年龄" width="100"/>
+        <el-table-column prop="state" type="状态" width="100"/>
+        <el-table-column prop="did" type="部门" width="100"/>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="editAndAddMaterial(scope.row)"
+            >编辑</el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="deleteEmployee(scope.id)"
+            >删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -51,15 +54,6 @@
 <!--        @size-change="sizeChange"-->
 <!--        @current-change="currentChange"-->
 <!--      />-->
-<!--      <el-table-->
-<!--        v-loading="listLoading"-->
-<!--        class="menmber"-->
-<!--        :data="list"-->
-<!--        element-loading-text="Loading"-->
-<!--        border-->
-<!--        fit-->
-<!--        highlight-current-row-->
-<!--      >-->
 <!--        <el-table-column align="center" label="ID" width="95">-->
 <!--          <template slot-scope="scope">-->
 <!--            {{ scope.$index }}-->
@@ -94,37 +88,39 @@
 <!--      </el-table>-->
     </div>
     <div>
-      <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
-      <el-dialog title="新增人员" :visible.sync="dialogFormVisible">
-        <el-form :model="form">
+      <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
+        <el-form :model="tableData">
+          <el-form-item label="id" :label-width="formLabelWidth">
+            <el-input v-model="tableData.id" autocomplete="off"></el-input>
+          </el-form-item>
           <el-form-item label="名字" :label-width="formLabelWidth">
-            <el-input v-model="form.username" autocomplete="off"></el-input>
+            <el-input v-model="tableData.username" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="密码" :label-width="formLabelWidth">
-            <el-input v-model="form.password" autocomplete="off"></el-input>
+            <el-input v-model="tableData.password" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="email" :label-width="formLabelWidth">
-            <el-input v-model="form.email" autocomplete="off"></el-input>
+            <el-input v-model="tableData.email" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="phone" :label-width="formLabelWidth">
-            <el-input v-model="form.phone" autocomplete="off"></el-input>
+            <el-input v-model="tableData.phone" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="年龄" :label-width="formLabelWidth">
-            <el-input v-model="form.age" autocomplete="off"></el-input>
+            <el-input v-model="tableData.age" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="部门id" :label-width="formLabelWidth">
-            <el-input v-model="form.did" autocomplete="off"></el-input>
+            <el-input v-model="tableData.did" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="状态" :label-width="formLabelWidth">
-            <el-select v-model="form.state" placeholder="请选择状态">
+            <el-select v-model="tableData.state" placeholder="请选择状态">
               <el-option label="在职" value="0"></el-option>
               <el-option label="离职" value="1"></el-option>
             </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="add" >确 定</el-button>
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="makeSure()" >确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -137,7 +133,7 @@
 <script>
   import { list } from '@/api/department'
   import { deleteDepartment } from "@/api/department";
-  import { addEmployee , findAll } from '@/api/employee'
+  import { addEmployee , findAll , updateEmployee ,deleteEmployee} from '@/api/employee'
 
 export default {
   data() {
@@ -151,17 +147,18 @@ export default {
       tableData: [
 
       ],
-      dialogFormVisible: false,
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
+      headArr: [
+        { prop: 'id', label: 'id'},
+        { prop: 'username', label: '名字'},
+        { prop: 'email', label: 'email'},
+        { prop: 'age', label: '年龄'},
+        { prop: 'phone', label: 'phone'},
+        { prop: 'state', label: '状态'},
+        { prop: 'did', label: '部门id'},
+      ],
+      dialogVisible: false,
+      dialogTitle: '',
+      ifMaterialEdit: 0,  // 0表示编辑，1表示新增
       formLabelWidth: '120px'
     }
   },
@@ -230,34 +227,71 @@ export default {
       }
       // this.$router.push({ path: '/department/create' })
     },
-    add(){
-      this.$message('submit!')
-      console.log(this.form)
-      let requestData = {
-        username: this.form.username,
-        password: this.form.password,
-        email: this.form.email,
-        phone: this.form.phone,
-        state: this.form.state,
-        age: this.form.age,
-        did: this.form.did
+    editAndAddMaterial(row){
+      if (row) {
+        this.ifMaterialEdit = 0
+        this.dialogVisible = true
+        this.dialogTitle = '编辑'
+        this.tableData = row
+      } else {
+        this.ifMaterialEdit = 1
+        this.dialogVisible = true
+        this.dialogTitle = '新增'
+        this.tableData = {}
       }
-      addEmployee(requestData).then(response =>{
-        console.log('requestData:', requestData)
-        if (response['resultCode'] === 200) {
-          this.$router.push({path:"/department/index"})
-        }else {
-          this.$message(response['message'])
-        }
-      })
-    },
-    editEmployee(){
-
     },
     deleteEmployee(){
-
+      let id = {id: this.tableData.id}
+      console.log(id)
+      console.log(this.tableData)
+      this.$confirm('确认删除吗？','提升', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(()=> {
+        deleteEmployee(id)
+          .then(() => {
+            this.$message.success('删除成功')
+          })
+          .catch(error => {
+            console.error('删除失败',error)
+            this.$message.error('删除失败')
+          })
+      })
+    },
+    makeSure(){
+      let params = {
+        id: this.tableData.id,
+        username: this.tableData.username,
+        password: this.tableData.password,
+        email: this.tableData.email,
+        phone: this.tableData.phone,
+        state: this.tableData.state,
+        age: this.tableData.age,
+        did: this.tableData.did
+      }
+      if (this.ifMaterialEdit === 1){
+        addEmployee(params).then(response =>{
+          console.log('requestData:', requestData)
+          if (response['resultCode'] === 200) {
+            this.$router.replace({path:"/department/index"})
+          }else {
+            this.$message(response['message'])
+          }
+        })
+      }else if (this.ifMaterialEdit ===0){
+        updateEmployee(params).then(response =>{
+          console.log('requestData:', requestData)
+          if (response['resultCode'] === 200) {
+            this.$router.replace({path:"/department/index"})
+          }else {
+            this.$message(response['message'])
+          }
+        })
+      }else {
+        this.$message.warning('请稍后再试')
+      }
     }
-
   }
 }
 </script>

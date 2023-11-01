@@ -14,3 +14,20 @@ export function findAll(query) {
    params: query
  })
 }
+
+export function updateEmployee(data) {
+  return request({
+    url: '/api/employee/edit',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteEmployee(data) {
+  return request({
+    url: '/api/employee/delete',
+    method: 'post',
+    data
+  })
+}
+
