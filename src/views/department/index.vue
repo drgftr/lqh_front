@@ -23,12 +23,12 @@
       <el-button plain icon="el-icon-delete">批量删除</el-button>
       <el-table :data="tableData" border>
         <el-table-column label="序号" type="index" width="50"/>
-        <el-table-column prpo="username" type="用户名" width="180"/>
-        <el-table-column prpo="email" type="邮箱" width="180"/>
-        <el-table-column prpo="phone" type="手机号" width="180"/>
-        <el-table-column prpo="age" type="年龄" width="180"/>
-        <el-table-column prpo="state" type="状态" width="180"/>
-        <el-table-column prpo="did" type="部门" width="180"/>
+        <el-table-column prop="username" type="用户名" width="180"/>
+        <el-table-column prop="email" type="邮箱" width="180"/>
+        <el-table-column prop="phone" type="手机号" width="180"/>
+        <el-table-column prop="age" type="年龄" width="180"/>
+        <el-table-column prop="state" type="状态" width="180"/>
+        <el-table-column prop="did" type="部门" width="180"/>
         <el-table-column label="操作" width="180">
           <el-button
             size="mini"
