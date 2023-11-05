@@ -23,11 +23,11 @@ export function updateEmployee(data) {
   })
 }
 
-export function deleteEmployee(data) {
+export function deleteEmployee(params) {
   return request({
     url: '/api/employee/delete',
     method: 'post',
-    data
+    params
   })
 }
 

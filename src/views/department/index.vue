@@ -39,21 +39,21 @@
             <el-button
               size="mini"
               type="danger"
-              @click="deleteEmployee(scope.id)"
+              @click="deleteEmployee(scope.row)"
             >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
-<!--      <el-pagination-->
-<!--        :current-page="page"-->
-<!--        :page-size="size"-->
-<!--        :page-sizes="pageSizes"-->
-<!--        layout="total, sizes, prev, pager, next, jumper"-->
-<!--        :total="total"-->
-<!--        @size-change="sizeChange"-->
-<!--        @current-change="currentChange"-->
-<!--      />-->
+      <el-pagination
+        :current-page="page"
+        :page-size="size"
+        :page-sizes="pageSizes"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="sizeChange"
+        @current-change="currentChange"
+      />
 <!--        <el-table-column align="center" label="ID" width="95">-->
 <!--          <template slot-scope="scope">-->
 <!--            {{ scope.$index }}-->
@@ -240,7 +240,7 @@ export default {
         this.tableData = {}
       }
     },
-    deleteEmployee(){
+    deleteEmployee(row){
       let id = {id: this.tableData.id}
       console.log(id)
       console.log(this.tableData)
@@ -272,7 +272,6 @@ export default {
       }
       if (this.ifMaterialEdit === 1){
         addEmployee(params).then(response =>{
-          console.log('requestData:', requestData)
           if (response['resultCode'] === 200) {
             this.$router.replace({path:"/department/index"})
           }else {

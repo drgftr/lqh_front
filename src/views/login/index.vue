@@ -41,7 +41,9 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      <el-button class="shopregister" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleShopReister">商家注册</el-button>
+
 
       <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
@@ -107,9 +109,11 @@ export default {
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
+        console.log(valid)
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          this.$store.dispatch('user/login', this.loginForm)
+            .then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
@@ -120,6 +124,9 @@ export default {
           return false
         }
       })
+    },
+    handleShopReister() {
+      this.$router.push({ path: '/shopregister' })
     }
   }
 }
@@ -161,6 +168,9 @@ $cursor: #fff;
         -webkit-text-fill-color: $cursor !important;
       }
     }
+  }
+  .shopregister{
+    margin-left: 0;
   }
 
   .el-form-item {

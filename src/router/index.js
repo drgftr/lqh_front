@@ -56,6 +56,12 @@ export const constantRoutes = [
   },
 
   {
+    path: '/shopregister',
+    component: () => import('@/views/shop/register/index'),
+
+  },
+
+  {
     path: '/department',
     component: Layout,
     name: '部门管理',
@@ -72,6 +78,18 @@ export const constantRoutes = [
         name: 'Create',
         component: () => import('@/views/department/add'),
         meta: { title: '新增部门', icon: 'from' }
+      }
+    ]
+  },
+  {
+    path: '/admin_shop',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'admin_shop',
+        component: () => import('@/views/shop/audit/index'),
+        meta: { title: '商铺审核', icon: 'form' }
       }
     ]
   },
@@ -105,8 +123,9 @@ export const constantRoutes = [
       {
         path: 'index',
         name: 'Form',
+        meta: { title: 'Form', icon: 'form' },
+
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
       }
     ]
   },
