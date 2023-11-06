@@ -56,6 +56,8 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { login } from "@/api/user";
+import {setToken} from "@/utils/auth";
 
 export default {
   name: 'Login',
@@ -108,22 +110,38 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        console.log(valid)
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+      let params = {
+        username: this.loginForm.username,
+        password: this.loginForm.password
+      }
+      console.log(params)
+      login(params).then(response =>{
+        if (response['resultCode'] === 200) {
+          this.$message("登录成功")
+          setToken("admin-token")
+          this.$router.push({ path: this.redirect || '/' })
+          // this.$router.replace({path:"/audit/index"})
+        }else {
+          this.$message(response['message'])
         }
       })
+      // this.$router.push({ path: this.redirect || '/' })
+      // this.$refs.loginForm.validate(valid => {
+      //   console.log(valid)
+      //   if (valid) {
+      //     this.loading = true
+      //     this.$store.dispatch('user/login', this.loginForm)
+      //       .then(() => {
+      //       this.$router.push({ path: this.redirect || '/' })
+      //       this.loading = false
+      //     }).catch(() => {
+      //       this.loading = false
+      //     })
+      //   } else {
+      //     console.log('error submit!!')
+      //     return false
+      //   }
+      // })
     },
     handleShopReister() {
       this.$router.push({ path: '/shopregister' })
@@ -138,7 +156,7 @@ export default {
 
 $bg:#283443;
 $light_gray:#fff;
-$cursor: #fff;
+$cursor: #ffffff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {

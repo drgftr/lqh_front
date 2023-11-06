@@ -16,7 +16,13 @@ export function list(params) {
   })
 }
 
-
+export function paginationList(params) {
+  return request({
+    url: '/api/shop/paginationList',
+    method: 'post',
+    params: params
+  })
+}
 
 export function outShop(params) {
   return request({
@@ -26,11 +32,11 @@ export function outShop(params) {
   })
 }
 
-export function deleteShop(data) {
+export function deleteShop(params) {
   return request({
     url: '/api/shop/delete',
     method: 'post',
-    data
+    params
   })
 }
 
@@ -40,4 +46,5 @@ export function updateShop(data) {
     method: 'post',
     data
   })
+
 }

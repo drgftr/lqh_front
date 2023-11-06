@@ -55,12 +55,14 @@
     </el-table>
     <el-pagination
       class="pagination"
-      align="center"
+      align="right"
       background
-      layout="prev,pager,next"
-      :total=size
-    >
-    </el-pagination>
+      layout="prev, pager, next"
+      :page-size="per_page"
+      :total="total"
+      :current-page="currentPage"
+      @current-change="handleCurrentChange"
+    />
     <div>
       <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
         <el-form :model="Data">
@@ -92,8 +94,8 @@
 </template>
 
 <script>
-import {list,outShop,deleteShop,updateShop} from "@/api/shop";
-import {addEmployee, deleteEmployee} from "@/api/employee";
+import {list,outShop,deleteShop,updateShop,paginationList} from "@/api/shop";
+import {addEmployee} from "@/api/employee";
 
 export default {
   filters: {
@@ -111,6 +113,9 @@ export default {
       list: null,
       listLoading: true,
       size: 100,
+      total: 0,
+      currentPage: 1,
+      per_page: 2,
       Data: [],
       headArr: [
         { prop: 'id', label: 'id'},
@@ -136,17 +141,31 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      list().then(response => {
-        // this.data = Response.data
-       console.log(response)
-        if(response['resultCode'] === 200){
-          this.list = response.data
+      const params = {
+        page: this.currentPage, // 获取当前页码
+        pageSize: this.per_page
+      }
+      console.log(params)
+      paginationList(params).then(response => {
+        console.log(response)
+        if (response['resultCode'] === 200) {
+          this.list = response.data.shops
+          console.log(this.list)
+
+          // 判断数据的数量是否小于每页显示的数量
+          if (this.list.length < params.pageSize) {
+            const emptyCount = params.pageSize - this.list.length
+            for (let i = 0; i < emptyCount; i++) {
+              this.list.push({}) // 添加空数据
+            }
+          }
           this.listLoading = false
-          this.Data = response.data
-        }else {
+          this.total = response.data.total
+          this.Data = data
+        } else {
           this.listLoading = false
-          this.list=[]
-          this.$message("数据请求失败,请重试")
+          this.list = []
+          this.$message('数据请求失败')
         }
       })
     },
@@ -199,10 +218,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(()=> {
-        deleteEmployee(params)
+        deleteShop(params)
           .then(() => {
             this.$message.success('删除成功')
-            // this.$router.go(0)
+            this.$router.go(0)
           })
           .catch(error => {
             console.error('删除失败',error)
@@ -233,7 +252,11 @@ export default {
           this.$message(response['message'])
         }
       })
-    }
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.fetchData()
+    },
   }
 }
 </script>
