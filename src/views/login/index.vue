@@ -116,11 +116,14 @@ export default {
       }
       console.log(params)
       login(params).then(response =>{
-        const token = response['token']
-        localStorage.setItem("token",token)
+
         if (response['resultCode'] === 200) {
           this.$message("登录成功")
-          const token = response.data['token']
+          // const token = res['token']
+          // localStorage.setItem("token",token)
+          const res = response.data
+          console.log(response)
+          const token = res['token']
           localStorage.setItem("token",token)
           this.$router.push({ path: this.redirect || '/' })
           // this.$router.replace({path:"/audit/index"})
