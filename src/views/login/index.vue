@@ -116,9 +116,12 @@ export default {
       }
       console.log(params)
       login(params).then(response =>{
+        const token = response['token']
+        localStorage.setItem("token",token)
         if (response['resultCode'] === 200) {
           this.$message("登录成功")
-          setToken("admin-token")
+          const token = response.data['token']
+          localStorage.setItem("token",token)
           this.$router.push({ path: this.redirect || '/' })
           // this.$router.replace({path:"/audit/index"})
         }else {
